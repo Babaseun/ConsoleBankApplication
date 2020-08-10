@@ -1,8 +1,8 @@
 ﻿using BankAppLib;
-using ConsoleBankApplication.Helpers;
+using bankapp_refactored_week4.Helpers;
 using System;
 
-namespace ConsoleBankApplication.Controllers
+namespace bankapp_refactored_week4.Controllers
 {
     public class CustomerController
     {

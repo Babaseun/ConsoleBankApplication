@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ConsoleBankApplication.Controllers
+namespace bankapp_refactored_week4.Controllers
 {
     internal class AccountController
     {
@@ -49,15 +49,20 @@ namespace ConsoleBankApplication.Controllers
             return account;
         }
 
-        public List<Account> UpdateAccountBalance(string accountNumber, decimal amt, string transferAccount)
+        public List<Account> AccountsForTransFar(string accountNumber, string transferAccount)
         {
             var firstAccount = BankDB.Accounts.Find(acc => acc.AccountNumber == accountNumber);
             var secondAccount = BankDB.Accounts.Find(acc => acc.AccountNumber == transferAccount);
 
-            firstAccount.Balance = firstAccount.Balance - amt;
-            secondAccount.Balance = secondAccount.Balance + amt;
-
             return new List<Account>() { firstAccount, secondAccount };
+        }
+
+        public Account UpdateAccountOnWithDraw(string accountNumber, decimal amt)
+        {
+            var account = BankDB.Accounts.Find(acc => acc.AccountNumber == accountNumber);
+            account.Balance -= amt;
+
+            return account;
         }
     }
 }

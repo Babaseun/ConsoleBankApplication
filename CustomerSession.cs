@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ConsoleBankApplication
+namespace bankapp_refactored_week4
 {
     public class CustomerSession
     {

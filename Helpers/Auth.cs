@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using BankAppLib;
 
-namespace ConsoleBankApplication.Helpers
+namespace bankapp_refactored_week4.Helpers
 {
     public class Auth
     {

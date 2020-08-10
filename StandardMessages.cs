@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ConsoleBankApplication
+namespace bankapp_refactored_week4
 {
     internal class StandardMessages
     {
@@ -54,19 +54,21 @@ namespace ConsoleBankApplication
             Console.WriteLine("OwnerID: " + account.OwnerID);
         }
 
-        public static void ListOfAccounts(List<Account> accounts)
+        public static void ListOfTransactions(Guid ID)
         {
-            Console.WriteLine("------List Of Accounts-----");
-            foreach (var account in accounts)
+            var transactions = BankDB.Transactions.FindAll(tr => tr.OwnerID == ID);
+            Console.WriteLine("------Transaction History-----");
+
+            foreach (var transaction in transactions)
             {
                 Console.WriteLine();
-                Console.WriteLine("AccountID: " + account.ID);
-                Console.WriteLine("AccountType: " + account.AccountType);
-                Console.WriteLine("AccountNumber: " + account.AccountNumber);
-                Console.WriteLine("Balance: " + account.Balance);
-                Console.WriteLine("CreatedAT: " + account.DateCreated);
-                Console.WriteLine("Currency: " + account.Note);
-                Console.WriteLine("OwnerID: " + account.OwnerID);
+                Console.WriteLine("Fullname: " + transaction.FullName);
+                Console.WriteLine("AccountType: " + transaction.AccountType);
+                Console.WriteLine("AccountNumber: " + transaction.AccountNumber);
+                Console.WriteLine("Balance: " + transaction.Balance);
+                Console.WriteLine("CreatedAT: " + transaction.Date);
+                Console.WriteLine("Currency: " + transaction.Note);
+                Console.WriteLine("Amount: " + transaction.Amount);
             }
         }
 
@@ -87,18 +89,18 @@ namespace ConsoleBankApplication
             Console.WriteLine("------Account has been credited-----");
         }
 
-        public static int AmountToDeposit()
+        public static decimal AmountToDeposit()
         {
             Console.WriteLine("------How much do you want to deposit ?------");
-            int amount = int.Parse(Console.ReadLine());
+            var amount = decimal.Parse(Console.ReadLine());
             Console.WriteLine();
             return amount;
         }
 
-        public static string AmountToWithdraw()
+        public static decimal AmountToWithdraw()
         {
             Console.WriteLine("------How much do you want to withdraw ?------");
-            string amount = Console.ReadLine();
+            var amount = decimal.Parse(Console.ReadLine());
             Console.WriteLine();
             return amount;
         }
@@ -128,9 +130,12 @@ namespace ConsoleBankApplication
             Console.WriteLine();
         }
 
-        public static void TransferMessage()
+        public static decimal TransferMessage()
         {
-            Console.WriteLine("Do you want to transfer from an account to another account---y/n--");
+            Console.WriteLine("How much do you want to transfer");
+            var amount = decimal.Parse(Console.ReadLine());
+            Console.WriteLine();
+            return amount;
         }
 
         public static void AccountOptions()
@@ -139,6 +144,8 @@ namespace ConsoleBankApplication
             Console.WriteLine("-------------Press 2 to deposit into an account------");
             Console.WriteLine("-------------Press 3 to transfer an account------");
             Console.WriteLine("-------------Press 4 to LOGOUT------------------");
+            Console.WriteLine("-------------Press 5 to Withdraw from an account------------------");
+            Console.WriteLine("-------------Press 6 to see transaction HISTORY------------------");
         }
     }
 }

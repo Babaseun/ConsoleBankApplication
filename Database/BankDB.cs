@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using BankAppLib;
 
-namespace ConsoleBankApplication
+namespace bankapp_refactored_week4
 {
     public static class BankDB
     {
