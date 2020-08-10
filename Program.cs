@@ -1,185 +1,89 @@
 ﻿using ConsoleBankApplication.Controllers;
-using ConsoleBankApplication.Models;
+using ConsoleBankApplication.Helpers;
 using System;
-using System.Collections.Generic;
 
 namespace ConsoleBankApplication
 {
-    internal class Program
+    public class Program
     {
-        private static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Program.StartApplication();
         }
 
         public static void StartApplication()
         {
-            List<Customer> customers = new List<Customer>(); // stores a list of customers
-            List<Account> accounts = new List<Account>();  /// stores a list of accounts
-            List<Transactions> allTransactions = new List<Transactions>();  /// stores a list of all transactions
-
-            Guid ID;
-            string yOrNo;
-            string accountNumber;
-            string transferTo;
-
-            string amt;
-            bool loggedIn = false;
+            CustomerSession session = new CustomerSession();
 
             while (true)
             {
-                CustomerController postCustomer = new CustomerController();
-                var resForNewUser = postCustomer.RegisterCustomer();
+            START:
 
-                var getCustomer = customers.Find(customer => customer.Name == resForNewUser.Name && customer.Email == resForNewUser.Email);
-                if (getCustomer == null)
+                StandardMessages.WelcomeMessage();
+
+                string option = Console.ReadLine();
+
+                if (option == "1")
                 {
-                    loggedIn = true;
-                    customers.Add(resForNewUser);
-                    ID = resForNewUser.ID;
-                    StandardMessages.SuccessMessage();
+                    CustomerController customer = new CustomerController();
+                    var responseData = customer.RegisterCustomer();
 
-                    StandardMessages.CreateAccountMsg();
-
-                    var newAccount = new AccountController();
-                    var account = newAccount.CreateAccount(ID);
-
-                    StandardMessages.AccountInfo(account);
-
-                    accounts.Add(account);
-                }
-                else
-                {
-                    StandardMessages.BadRequestMessageForUser(resForNewUser.Name);
-                    CustomerController loginCustomer = new CustomerController();
-                    var resForUser = loginCustomer.LoginCustomer();
-
-                    var user = customers.Find(customer => customer.Email == resForUser["email"]);
-                    if (user == null)
+                    if (Auth.CheckIfUserExists(responseData) == false)
                     {
-                        StandardMessages.BadRequestMessageForUser2(resForUser["email"]);
+                        BankDB.Customers.Add(responseData);
+                        session.ID = responseData.ID;
+                        session.Name = responseData.Name;
+                        session.Email = responseData.Email;
                     }
                     else
                     {
-                        loggedIn = true;
-
-                        ID = user.ID;
-                        StandardMessages.SuccessMessage();
-
-                        StandardMessages.CreateAccountMsg();
-
-                        var newAccount = new AccountController();
-                        var account = newAccount.CreateAccount(ID);
-
-                        StandardMessages.AccountInfo(account);
-
-                        accounts.Add(account);
+                        StandardMessages.BadRequestMessageForUser(responseData.Name);
+                        goto START;
                     }
                 }
-            Deposit:
-                StandardMessages.DepositMessage();
-
-                yOrNo = Console.ReadLine();
-
-                if (yOrNo == "y")
+                if (option == "2")
                 {
-                    StandardMessages.EnterAccountMessage();
-                    accountNumber = Console.ReadLine();
+                    CustomerController customer = new CustomerController();
+                    var responseData = customer.LoginCustomer();
 
-                    AccountController account = new AccountController();
-                    var response = account.GetAccount(accounts, accountNumber);
-
-                    StandardMessages.AccountInfo(response);
-
-                    amt = StandardMessages.AmountToDeposit();
-
-                    account.UpdateAccount(accounts, accountNumber, decimal.Parse(amt));
-                    StandardMessages.CreditMessage();
-
-                    StandardMessages.AccountInfo(response);
-
-                    Transactions newTransaction = new Transactions();
-                    //newTransaction.F
-                }
-                yOrNo = "";
-
-                StandardMessages.WithdrawalMessage();
-                yOrNo = Console.ReadLine();
-                if (yOrNo == "y")
-                {
-                    StandardMessages.EnterAccountMessage();
-                    accountNumber = Console.ReadLine();
-                    AccountController account = new AccountController();
-                    amt = StandardMessages.AmountToWithdraw();
-                    var response = account.GetAccount(accounts, accountNumber);
-                    if (response.AccountType.ToLower() == "savings")
+                    if (Auth.CheckIfUserExists(responseData) == true)
                     {
-                        if (response.Balance < 100)
-                        {
-                            StandardMessages.InsufficientMessage();
-                        }
-                        else
-                        {
-                            response.Balance = response.Balance - decimal.Parse(amt);
-                            StandardMessages.SuccessfulWithdrawal();
-                            StandardMessages.AccountInfo(response);
-                        }
+                        session.ID = responseData.ID;
+                        session.Name = responseData.Name;
+                        session.Email = responseData.Email;
                     }
                     else
                     {
-                        if (response.Balance < 1000)
-                        {
-                            StandardMessages.InsufficientMessage();
-                        }
-                        else
-                        {
-                            response.Balance = response.Balance - decimal.Parse(amt);
-                            StandardMessages.SuccessfulWithdrawal();
-                            StandardMessages.AccountInfo(response);
-                        }
+                        StandardMessages.BadRequestMessageForUser(responseData.Name);
+                        goto START;
                     }
                 }
-                yOrNo = "";
-
-                StandardMessages.TransferMessage();
-                yOrNo = Console.ReadLine();
-                if (yOrNo == "y")
+                while (session.ID != null)
                 {
-                    StandardMessages.EnterAccountMessage();
-                    accountNumber = Console.ReadLine();
-                    Console.WriteLine("Enter beneficiary");
-                    transferTo = Console.ReadLine();
-                    Console.WriteLine("Enter amount");
-                    amt = Console.ReadLine();
-                    AccountController account = new AccountController();
-                    var firstAcc = account.GetAccount(accounts, accountNumber);
-                    var secondAcc = account.GetAccount(accounts, transferTo);
+                OPTIONS:
+                    StandardMessages.AccountOptions();
+                    string accOption = Console.ReadLine();
 
-                    firstAcc.Balance = firstAcc.Balance - decimal.Parse(amt);
-                    secondAcc.Balance += decimal.Parse(amt);
-                }
-                yOrNo = "";
-
-                Console.WriteLine("Do you want to get your transaction history y/n");
-                yOrNo = Console.ReadLine();
-                if (yOrNo == "y")
-                {
-                }
-
-                if (loggedIn == true)
-                {
-                    StandardMessages.LogOutMessage();
-                    yOrNo = Console.ReadLine();
-                    if (yOrNo == "n")
+                    if (accOption == "1")
                     {
-                        goto Deposit;
+                        AccountController account = new AccountController();
+                        var customerAccount = account.CreateAccount(session.ID);
+                        StandardMessages.AccountInfo(customerAccount);
+                        goto OPTIONS;
                     }
-                    else
+                    if (accOption == "2")
                     {
-                        loggedIn = false;
-                        Console.WriteLine();
-                        Console.WriteLine();
-                        Console.WriteLine("You are logged out....");
+                        AccountController account = new AccountController();
+
+                        var accountNo = StandardMessages.EnterAccountMessage();
+                        var getAccount = account.GetAccount(accountNo);
+                        StandardMessages.AccountInfo(getAccount);
+
+                        var amt = StandardMessages.AmountToDeposit();
+                        var updateAcc = account.UpdateAccount(accountNo, amt);
+                        StandardMessages.AccountInfo(updateAcc);
+
+                        goto OPTIONS;
                     }
                 }
             }

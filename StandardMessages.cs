@@ -1,4 +1,4 @@
-﻿using ConsoleBankApplication.Models;
+﻿using BankAppLib;
 using System;
 using System.Collections.Generic;
 
@@ -9,6 +9,8 @@ namespace ConsoleBankApplication
         public static void WelcomeMessage()
         {
             Console.WriteLine("---------Welcome to ConsoleBankApplication -----");
+            Console.WriteLine("---------Press 1 to register 2 to login  -----");
+
             Console.WriteLine();
         }
 
@@ -73,9 +75,11 @@ namespace ConsoleBankApplication
             Console.WriteLine("------Do you want to credit an account--y/n---");
         }
 
-        public static void EnterAccountMessage()
+        public static string EnterAccountMessage()
         {
             Console.WriteLine("------Enter your account number-----");
+            string accountNo = Console.ReadLine();
+            return accountNo;
         }
 
         public static void CreditMessage()
@@ -83,10 +87,10 @@ namespace ConsoleBankApplication
             Console.WriteLine("------Account has been credited-----");
         }
 
-        public static string AmountToDeposit()
+        public static int AmountToDeposit()
         {
             Console.WriteLine("------How much do you want to deposit ?------");
-            string amount = Console.ReadLine();
+            int amount = int.Parse(Console.ReadLine());
             Console.WriteLine();
             return amount;
         }
@@ -129,9 +133,12 @@ namespace ConsoleBankApplication
             Console.WriteLine("Do you want to transfer from an account to another account---y/n--");
         }
 
-        public static void TransactionData(List<Transactions> transactions, Guid ID, string name)
+        public static void AccountOptions()
         {
-            //var getTransaction = transactions.Find(transaction => transaction.)
+            Console.WriteLine("-------------Press 1 to create an account------");
+            Console.WriteLine("-------------Press 2 to deposit into an account------");
+            Console.WriteLine("-------------Press 3 to transfer an account------");
+            Console.WriteLine("-------------Press 4 to LOGOUT------------------");
         }
     }
 }

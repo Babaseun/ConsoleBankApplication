@@ -1,17 +1,16 @@
-﻿using ConsoleBankApplication.Models;
+﻿using BankAppLib;
+using ConsoleBankApplication.Helpers;
 using System;
-using System.Collections.Generic;
 
 namespace ConsoleBankApplication.Controllers
 {
-    internal class CustomerController
+    public class CustomerController
     {
         public Customer RegisterCustomer()
         {
             string name;
             string email;
             string password;
-            StandardMessages.WelcomeMessage();
             Console.WriteLine("Please enter your name:");
             name = Console.ReadLine();
             Console.WriteLine("Please enter your email:");
@@ -19,23 +18,20 @@ namespace ConsoleBankApplication.Controllers
             Console.WriteLine("Please enter your password:");
             password = Console.ReadLine();
 
-            Customer customer = new Customer(Guid.NewGuid(), name, email, password);
+            Customer customer = new Customer(name, email, password);
 
             return customer;
         }
 
-        public Dictionary<string, string> LoginCustomer()
+        public Customer LoginCustomer()
         {
-            Dictionary<string, string> loginData = new Dictionary<string, string>();
             Console.WriteLine("Please enter your email:");
             string email = Console.ReadLine();
             Console.WriteLine("Please enter your password:");
             string password = Console.ReadLine();
+            var customer = BankDB.Customers.Find(customer => customer.Email == email);
 
-            loginData["email"] = email;
-            loginData["password"] = password;
-
-            return loginData;
+            return customer;
         }
     }
 }

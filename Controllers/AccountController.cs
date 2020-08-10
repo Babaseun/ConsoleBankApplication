@@ -1,4 +1,4 @@
-﻿using ConsoleBankApplication.Models;
+﻿using BankAppLib;
 using System;
 using System.Collections.Generic;
 
@@ -36,23 +36,23 @@ namespace ConsoleBankApplication.Controllers
             return newAccount;
         }
 
-        public Account GetAccount(List<Account> accounts, string accountNumber)
+        public Account GetAccount(string accountNumber)
         {
-            return accounts.Find(acc => acc.AccountNumber == accountNumber);
+            return BankDB.Accounts.Find(acc => acc.AccountNumber == accountNumber);
         }
 
-        public Account UpdateAccount(List<Account> accounts, string accountNumber, decimal amt)
+        public Account UpdateAccount(string accountNumber, decimal amt)
         {
-            var account = accounts.Find(acc => acc.AccountNumber == accountNumber);
+            var account = BankDB.Accounts.Find(acc => acc.AccountNumber == accountNumber);
             account.Balance += amt;
 
             return account;
         }
 
-        public List<Account> UpdateAccountBalance(List<Account> accounts, string accountNumber, decimal amt, string transferAccount)
+        public List<Account> UpdateAccountBalance(string accountNumber, decimal amt, string transferAccount)
         {
-            var firstAccount = accounts.Find(acc => acc.AccountNumber == accountNumber);
-            var secondAccount = accounts.Find(acc => acc.AccountNumber == transferAccount);
+            var firstAccount = BankDB.Accounts.Find(acc => acc.AccountNumber == accountNumber);
+            var secondAccount = BankDB.Accounts.Find(acc => acc.AccountNumber == transferAccount);
 
             firstAccount.Balance = firstAccount.Balance - amt;
             secondAccount.Balance = secondAccount.Balance + amt;
